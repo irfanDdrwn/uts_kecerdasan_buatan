@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% block title %}Prediksi - Gaming Revenue Predictor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-sliders"></i> Input Data Game</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Pilih Model ML</label>
+                    <select class="form-select" id="model_choice">
+                        <option value="linear_regression">Linear Regression</option>
+                        <option value="ann">Artificial Neural Network (ANN)</option>
+                        <option value="rnn">RNN / LSTM</option>
+                        <option value="backprop">Backpropagation (Manual)</option>
+                    </select>
+                    <small class="text-muted">K-Means digunakan untuk clustering hasil prediksi</small>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <label class="form-label">Tahun Rilis</label>
+                    <input type="number" class="form-control" id="release_year" value="2020" min="2000" max="2024">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Jumlah Pemain (Juta)</label>
+                    <input type="number" class="form-control" id="players" value="50" step="0.1">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Peak Concurrent Players (Juta)</label>
+                    <input type="number" class="form-control" id="peak_players" value="10" step="0.1">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Metacritic Score (50–100)</label>
+                    <input type="number" class="form-control" id="metacritic" value="75" min="50" max="100">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Genre</label>
+                    <select class="form-select" id="genre">
+                        {% for g in feat_info.genres %}
+                        <option value="{{ g }}">{{ g }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Platform</label>
+                    <select class="form-select" id="platform">
+                        {% for p in feat_info.platforms %}
+                        <option value="{{ p }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Developer</label>
+                    <select class="form-select" id="developer">
+                        {% for d in feat_info.developers %}
+                        <option value="{{ d }}">{{ d }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Esports Popularity</label>
+                    <select class="form-select" id="esports">
+                        {% for e in feat_info.esports %}
+                        <option value="{{ e }}">{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Trending Status</label>
+                    <select class="form-select" id="trend">
+                        {% for t in feat_info.trends %}
+                        <option value="{{ t }}">{{ t }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="btn btn-primary w-100" onclick="submitPrediction()" id="btnPredict">
+                    <i class="bi bi-lightning"></i> Prediksi Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Hasil Prediksi</h5>
+            </div>
+            <div class="card-body">
+                <div id="result_area" style="display:none;">
+                    <div class="text-center mb-3">
+                        <h6 class="text-muted">Estimasi Revenue Game</h6>
+                        <h2 class="text-primary" id="revenue_result">-</h2>
+                        <small class="text-muted">dalam Juta USD</small>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Segmen Game (K-Means):</strong></p>
+                        <span class="badge bg-info badge-cluster" id="cluster_label">-</span>
+                    </div>
+                    <div class="mb-3">
+                        <p class="mb-1"><strong>Model Digunakan:</strong></p>
+                        <span class="badge bg-secondary badge-cluster" id="model_used_label">-</span>
+                    </div>
+                    <div class="alert alert-light border mt-3">
+                        <small>
+                            <i class="bi bi-info-circle"></i>
+                            <strong>Keterangan Segmen:</strong><br>
+                            🔵 <b>Budget Indie</b>: Revenue rendah, pemain sedikit<br>
+                            🟢 <b>Mainstream Hit</b>: Revenue menengah, populer<br>
+                            🟡 <b>Blockbuster</b>: Revenue sangat tinggi<br>
+                            🔴 <b>Niche Premium</b>: Skor tinggi, pemain spesifik
+                        </small>
+                    </div>
+                </div>
+                <div id="placeholder_area" class="text-center text-muted py-5">
+                    <i class="bi bi-arrow-left fs-1"></i>
+                    <p class="mt-2">Isi form di sebelah kiri lalu klik <b>Prediksi Sekarang</b></p>
+                </div>
+                <div id="loading_area" style="display:none;" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status"></div>
+                    <p class="mt-2 text-muted">Memproses...</p>
+                </div>
+                <div id="error_area" class="alert alert-danger" style="display:none;"></div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-table"></i> Info Metrik Model Terpilih</h6>
+            </div>
+            <div class="card-body" id="metrics_info">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="table-dark"><tr><th>Metrik</th><th>Nilai</th></tr></thead>
+                    <tbody id="metrics_tbody">
+                        <tr><td colspan="2" class="text-center text-muted">Pilih model dan prediksi dahulu</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const modelMetrics = {
+    'linear_regression': {name: 'Linear Regression', MAE: 1210.31, RMSE: 1405.60, R2: -0.0507},
+    'ann': {name: 'ANN', MAE: 1450.45, RMSE: 1765.06, R2: -0.6569},
+    'rnn': {name: 'RNN/LSTM', MAE: 1371.01, RMSE: 1653.45, R2: -0.4540},
+    'backprop': {name: 'Backpropagation', MAE: 1201.12, RMSE: 1396.29, R2: -0.0369}
+};
+
+function submitPrediction() {
+    const btn = document.getElementById('btnPredict');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses...';
+
+    document.getElementById('result_area').style.display = 'none';
+    document.getElementById('placeholder_area').style.display = 'none';
+    document.getElementById('loading_area').style.display = 'block';
+    document.getElementById('error_area').style.display = 'none';
+
+    const payload = {
+        release_year: document.getElementById('release_year').value,
+        players: document.getElementById('players').value,
+        peak_players: document.getElementById('peak_players').value,
+        metacritic: document.getElementById('metacritic').value,
+        genre: document.getElementById('genre').value,
+        platform: document.getElementById('platform').value,
+        developer: document.getElementById('developer').value,
+        esports: document.getElementById('esports').value,
+        trend: document.getElementById('trend').value,
+        model: document.getElementById('model_choice').value
+    };
+
+    fetch('/api/predict', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        document.getElementById('loading_area').style.display = 'none';
+        if (data.error) {
+            document.getElementById('error_area').textContent = 'Error: ' + data.error;
+            document.getElementById('error_area').style.display = 'block';
+        } else {
+            document.getElementById('revenue_result').textContent = '$ ' + data.revenue.toLocaleString('en-US');
+            document.getElementById('cluster_label').textContent = data.cluster_label;
+            document.getElementById('model_used_label').textContent = payload.model.replace('_', ' ').toUpperCase();
+            document.getElementById('result_area').style.display = 'block';
+
+            // Update metrics table
+            const m = modelMetrics[payload.model];
+            document.getElementById('metrics_tbody').innerHTML = `
+                <tr><td>MAE</td><td>${m.MAE.toLocaleString()}</td></tr>
+                <tr><td>RMSE</td><td>${m.RMSE.toLocaleString()}</td></tr>
+                <tr><td>R² Score</td><td>${m.R2}</td></tr>
+            `;
+        }
+    })
+    .catch(err => {
+        document.getElementById('loading_area').style.display = 'none';
+        document.getElementById('error_area').textContent = 'Gagal menghubungi server: ' + err;
+        document.getElementById('error_area').style.display = 'block';
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-lightning"></i> Prediksi Sekarang';
+    });
+}
+</script>
+{% endblock %}

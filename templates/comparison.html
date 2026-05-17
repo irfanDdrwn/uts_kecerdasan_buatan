@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block title %}Perbandingan Model - Gaming Revenue Predictor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-table"></i> Tabel Perbandingan Metrik Model</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped text-center">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Model</th>
+                                <th>MAE</th>
+                                <th>RMSE</th>
+                                <th>R² Score</th>
+                                <th>Tipe</th>
+                                <th>Keterangan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for name, m in results.items() %}
+                            {% if name != 'K-Means' %}
+                            <tr>
+                                <td class="fw-bold">{{ name }}</td>
+                                <td>{{ m.MAE }}</td>
+                                <td>{{ m.RMSE }}</td>
+                                <td>{{ m.R2 }}</td>
+                                <td><span class="badge bg-primary">Supervised</span></td>
+                                <td>
+                                    {% if name == 'Backpropagation' %}
+                                    <span class="badge bg-success">Best MAE</span>
+                                    {% elif name == 'Linear Regression' %}
+                                    <span class="badge bg-info">Baseline</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            <tr>
+                                <td class="fw-bold">K-Means</td>
+                                <td>Inertia: {{ results['K-Means'].Inertia }}</td>
+                                <td>Silhouette: {{ results['K-Means'].Silhouette }}</td>
+                                <td>K = {{ results['K-Means'].K }}</td>
+                                <td><span class="badge bg-warning text-dark">Unsupervised</span></td>
+                                <td><span class="badge bg-secondary">Clustering</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bar Chart MAE & RMSE -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Perbandingan MAE</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartMAE" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Perbandingan RMSE</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartRMSE" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loss Curves -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-down"></i> ANN Training Loss</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartANNLoss" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-down"></i> RNN/LSTM Training Loss</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartRNNLoss" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-graph-down"></i> Backpropagation Training Loss</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartBPLoss" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-search"></i> Elbow Method (K-Means)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="chartElbow" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Data dari Flask
+    const annLoss = {{ ann_loss | tojson }};
+    const rnnLoss = {{ rnn_loss | tojson }};
+    const bpLoss = {{ bp_loss  | tojson }};
+    const elbow = {{ elbow_data | tojson }};
+
+    const models = ['Linear Regression', 'ANN', 'RNN/LSTM', 'Backpropagation'];
+    const maes = [1210.31, 1450.45, 1371.01, 1201.12];
+    const rmses = [1405.60, 1765.06, 1653.45, 1396.29];
+    const colors = ['#3498db', '#2ecc71', '#e67e22', '#9b59b6'];
+
+    // MAE Bar
+    new Chart(document.getElementById('chartMAE'), {
+        type: 'bar',
+        data: {
+            labels: models,
+            datasets: [{ label: 'MAE', data: maes, backgroundColor: colors }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
+    });
+
+    // RMSE Bar
+    new Chart(document.getElementById('chartRMSE'), {
+        type: 'bar',
+        data: {
+            labels: models,
+            datasets: [{ label: 'RMSE', data: rmses, backgroundColor: colors }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false } } }
+    });
+
+    // ANN Loss
+    function makeLossChart(id, lossData, label) {
+        const epochs = Array.from({ length: lossData.train_loss.length }, (_, i) => i + 1);
+        new Chart(document.getElementById(id), {
+            type: 'line',
+            data: {
+                labels: epochs,
+                datasets: [
+                    { label: 'Train Loss', data: lossData.train_loss, borderColor: '#3498db', fill: false, pointRadius: 0 },
+                    { label: 'Val Loss', data: lossData.val_loss, borderColor: '#e74c3c', fill: false, pointRadius: 0 }
+                ]
+            },
+            options: { plugins: { legend: { position: 'top' } }, scales: { x: { title: { display: true, text: 'Epoch' } } } }
+        });
+    }
+
+    makeLossChart('chartANNLoss', annLoss, 'ANN');
+    makeLossChart('chartRNNLoss', rnnLoss, 'RNN');
+    makeLossChart('chartBPLoss', bpLoss, 'Backprop');
+
+    // Elbow
+    new Chart(document.getElementById('chartElbow'), {
+        type: 'line',
+        data: {
+            labels: elbow.k,
+            datasets: [{ label: 'Inertia', data: elbow.inertia, borderColor: '#e67e22', backgroundColor: 'rgba(230,126,34,0.1)', fill: true, tension: 0.3 }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { title: { display: true, text: 'Jumlah Cluster (K)' } },
+                y: { title: { display: true, text: 'Inertia' } }
+            }
+        }
+    });
+</script>
+{% endblock %}
