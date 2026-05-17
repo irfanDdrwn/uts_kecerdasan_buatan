@@ -2,63 +2,91 @@
 {% block title %}Tentang - Gaming Revenue Predictor{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <div class="card">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-person"></i> Identitas Mahasiswa</h5></div>
-            <div class="card-body">
-                <table class="table table-sm table-borderless mb-0">
-                    <tr><td class="fw-bold" style="width:40%">Nama</td><td>: [Nama Mahasiswa]</td></tr>
-                    <tr><td class="fw-bold">NIM</td><td>: [NIM]</td></tr>
-                    <tr><td class="fw-bold">Program Studi</td><td>: Teknik Informatika</td></tr>
-                    <tr><td class="fw-bold">Mata Kuliah</td><td>: Praktikum Kecerdasan Buatan</td></tr>
-                    <tr><td class="fw-bold">Semester</td><td>: 4 (Genap) 2025/2026</td></tr>
-                    <tr><td class="fw-bold">Dosen</td><td>: [Nama Dosen]</td></tr>
-                    <tr><td class="fw-bold">Topik</td><td>: Prediksi Revenue Game</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 mb-3">
-        <div class="card">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-database"></i> Informasi Dataset</h5></div>
-            <div class="card-body">
-                <table class="table table-sm table-borderless mb-0">
-                    <tr><td class="fw-bold" style="width:40%">Nama Dataset</td><td>: Gaming Industry Trends</td></tr>
-                    <tr><td class="fw-bold">Jumlah Data</td><td>: 1.000 baris</td></tr>
-                    <tr><td class="fw-bold">Jumlah Fitur</td><td>: 11 kolom</td></tr>
-                    <tr><td class="fw-bold">Target Variabel</td><td>: Revenue (Millions $)</td></tr>
-                    <tr><td class="fw-bold">Periode Data</td><td>: 2000 – 2024</td></tr>
-                    <tr><td class="fw-bold">Sumber</td><td>: Kaggle</td></tr>
-                    <tr><td class="fw-bold">Lisensi</td><td>: CC0 Public Domain</td></tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="row">
     <div class="col-12 mb-3">
         <div class="card">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-list-ul"></i> Fitur Dataset</h5></div>
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-list-ul"></i> Fitur Dataset</h5>
+            </div>
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-bordered table-sm">
                         <thead class="table-dark">
-                            <tr><th>#</th><th>Nama Kolom</th><th>Tipe Data</th><th>Deskripsi</th></tr>
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Kolom</th>
+                                <th>Tipe Data</th>
+                                <th>Deskripsi</th>
+                            </tr>
                         </thead>
                         <tbody>
-                            <tr><td>1</td><td>Game Title</td><td>String</td><td>Nama game</td></tr>
-                            <tr><td>2</td><td>Genre</td><td>Kategorikal</td><td>Genre game (Action, RPG, dll)</td></tr>
-                            <tr><td>3</td><td>Platform</td><td>Kategorikal</td><td>Platform rilis (PC, PlayStation, dll)</td></tr>
-                            <tr><td>4</td><td>Release Year</td><td>Integer</td><td>Tahun rilis game</td></tr>
-                            <tr><td>5</td><td>Developer</td><td>Kategorikal</td><td>Perusahaan pengembang game</td></tr>
-                            <tr><td>6</td><td>Revenue (Millions $)</td><td>Float</td><td><strong>Target variabel</strong> — pendapatan game</td></tr>
-                            <tr><td>7</td><td>Players (Millions)</td><td>Float</td><td>Total pemain dalam jutaan</td></tr>
-                            <tr><td>8</td><td>Peak Concurrent Players</td><td>Float</td><td>Puncak pemain bersamaan</td></tr>
-                            <tr><td>9</td><td>Metacritic Score</td><td>Integer</td><td>Skor review Metacritic (50–100)</td></tr>
-                            <tr><td>10</td><td>Esports Popularity</td><td>Biner</td><td>Apakah game populer di esports (Yes/No)</td></tr>
-                            <tr><td>11</td><td>Trending Status</td><td>Kategorikal</td><td>Status tren (Rising/Stable/Declining)</td></tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Game Title</td>
+                                <td>String</td>
+                                <td>Nama game</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Genre</td>
+                                <td>Kategorikal</td>
+                                <td>Genre game (Action, RPG, dll)</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Platform</td>
+                                <td>Kategorikal</td>
+                                <td>Platform rilis (PC, PlayStation, dll)</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Release Year</td>
+                                <td>Integer</td>
+                                <td>Tahun rilis game</td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Developer</td>
+                                <td>Kategorikal</td>
+                                <td>Perusahaan pengembang game</td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Revenue (Millions $)</td>
+                                <td>Float</td>
+                                <td><strong>Target variabel</strong> — pendapatan game</td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Players (Millions)</td>
+                                <td>Float</td>
+                                <td>Total pemain dalam jutaan</td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Peak Concurrent Players</td>
+                                <td>Float</td>
+                                <td>Puncak pemain bersamaan</td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Metacritic Score</td>
+                                <td>Integer</td>
+                                <td>Skor review Metacritic (50–100)</td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Esports Popularity</td>
+                                <td>Biner</td>
+                                <td>Apakah game populer di esports (Yes/No)</td>
+                            </tr>
+                            <tr>
+                                <td>11</td>
+                                <td>Trending Status</td>
+                                <td>Kategorikal</td>
+                                <td>Status tren (Rising/Stable/Declining)</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -70,16 +98,18 @@
 <div class="row">
     <div class="col-12 mb-3">
         <div class="card">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-stack"></i> Tech Stack</h5></div>
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-stack"></i> Tech Stack</h5>
+            </div>
             <div class="card-body">
                 <div class="row text-center">
                     {% set techs = [
-                        ('bi-filetype-py', 'warning', 'Python 3.11', 'Bahasa pemrograman utama'),
-                        ('bi-server', 'success', 'Flask', 'Backend web framework'),
-                        ('bi-cpu', 'primary', 'TensorFlow/Keras', 'Deep learning (ANN, LSTM)'),
-                        ('bi-diagram-3', 'info', 'scikit-learn', 'Linear Regression, K-Means'),
-                        ('bi-calculator', 'danger', 'NumPy', 'Backpropagation manual'),
-                        ('bi-palette', 'secondary', 'Bootstrap 5', 'Frontend UI framework')
+                    ('bi-filetype-py', 'warning', 'Python 3.11', 'Bahasa pemrograman utama'),
+                    ('bi-server', 'success', 'Flask', 'Backend web framework'),
+                    ('bi-cpu', 'primary', 'TensorFlow/Keras', 'Deep learning (ANN, LSTM)'),
+                    ('bi-diagram-3', 'info', 'scikit-learn', 'Linear Regression, K-Means'),
+                    ('bi-calculator', 'danger', 'NumPy', 'Backpropagation manual'),
+                    ('bi-palette', 'secondary', 'Bootstrap 5', 'Frontend UI framework')
                     ] %}
                     {% for icon, color, name, desc in techs %}
                     <div class="col-6 col-md-4 mb-3">
@@ -98,19 +128,4 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12 mb-3">
-        <div class="card">
-            <div class="card-header"><h5 class="mb-0"><i class="bi bi-link-45deg"></i> Link Proyek</h5></div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><i class="bi bi-github me-2"></i><strong>GitHub:</strong> <a href="#" target="_blank">[Link GitHub Repository]</a></li>
-                    <li class="list-group-item"><i class="bi bi-globe me-2"></i><strong>Demo:</strong> <a href="#" target="_blank">[URL Deploy .my.id]</a></li>
-                    <li class="list-group-item"><i class="bi bi-youtube me-2 text-danger"></i><strong>Video Demo:</strong> <a href="#" target="_blank">[Link YouTube]</a></li>
-                    <li class="list-group-item"><i class="bi bi-file-pdf me-2 text-danger"></i><strong>Laporan:</strong> <a href="#" target="_blank">[Link Laporan PDF]</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

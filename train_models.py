@@ -184,7 +184,7 @@ with open('models/elbow_data.json', 'w') as f:
 # ==================== 5. BACKPROPAGATION (Manual NumPy) ====================
 print("\n[5] Training Backpropagation (Manual NumPy)...")
 
-
+ 
 
 bp_nn = BackpropNN(layer_sizes=[X_train.shape[1], 32, 16, 1], lr=0.005)
 bp_nn.train(X_train, y_train, X_test, y_test, epochs=100, batch_size=32)
